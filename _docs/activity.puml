@@ -1,0 +1,29 @@
+@startuml
+title User Purchase Flow in Ticketmaster Clone
+
+start
+:User accesses website via Browser;
+if (Wallet connected?) then (yes)
+:Select event;
+else (no)
+stop
+endif
+
+:Choose seat;
+if (Seats available?) then (yes)
+:Initiate purchase with ETH;
+if (Transaction valid?) then (yes)
+:Mint NFT ticket;
+:Display ticket to user;
+stop
+else (no)
+:Display error message;
+stop
+endif
+else (no)
+:Show 'Sold Out' message;
+stop
+endif
+
+stop
+@enduml

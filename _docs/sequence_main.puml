@@ -1,0 +1,26 @@
+@startuml
+title Web 3.0 Ticketmaster Clone Interaction Sequence
+
+actor User as "User\n(Wallet connected)"
+participant Browser as "Browser\n(MetaMask)"
+participant FrontEnd as "FrontEnd\n(React.js)"
+participant SmartContract as "SmartContract\n(TokenMaster.sol)"
+participant Blockchain as "Blockchain\n(Ethers.js)"
+
+User -> Browser: Connect MetaMask Wallet
+Browser -> FrontEnd: User selects an event
+FrontEnd -> SmartContract: Display available seats
+SmartContract -> FrontEnd: Return seat data
+
+alt Seats Available
+    User -> FrontEnd: Select seat and initiate purchase
+    FrontEnd -> SmartContract: Call mint function with seat selection
+    SmartContract -> Blockchain: Validate transaction
+    Blockchain -> SmartContract: Confirm minting
+    SmartContract -> User: Issue NFT ticket
+else Seats Not Available
+    FrontEnd -> User: Show 'Sold Out' message
+end
+
+FrontEnd -> User: Confirm purchase and display NFT ticket
+@enduml

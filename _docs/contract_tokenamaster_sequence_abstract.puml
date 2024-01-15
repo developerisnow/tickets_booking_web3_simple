@@ -1,0 +1,49 @@
+@startuml
+participant User
+participant TokenMaster as TM
+participant ERC721 as E721
+
+User -> TM: constructor(_name, _symbol)
+activate TM
+TM -> TM: owner = msg.sender
+TM -> E721: ERC721(_name, _symbol)
+deactivate TM
+
+User -> TM: list(_name, _cost, _maxTickets, _date, _time, _location)
+activate TM
+TM -> TM: totalOccasions++
+TM -> TM: occasions[totalOccasions] = Occasion(...)
+deactivate TM
+
+User -> TM: mint(_id, _seat)
+activate TM
+TM -> TM: require(_id != 0)
+TM -> TM: require(_id <= totalOccasions)
+TM -> TM: require(msg.value >= occasions[_id].cost)
+TM -> TM: require(seatTaken[_id][_seat] == address(0))
+TM -> TM: require(_seat <= occasions[_id].maxTickets)
+TM -> TM: occasions[_id].tickets -= 1
+TM -> TM: hasBought[_id][msg.sender] = true
+TM -> TM: seatTaken[_id][_seat] = msg.sender
+TM -> TM: seatsTaken[_id].push(_seat)
+TM -> TM: totalSupply++
+TM -> E721: _safeMint(msg.sender, totalSupply)
+deactivate TM
+
+User -> TM: getOccasion(_id)
+activate TM
+TM --> User: occasions[_id]
+deactivate TM
+
+User -> TM: getSeatsTaken(_id)
+activate TM
+TM --> User: seatsTaken[_id]
+deactivate TM
+
+User -> TM: withdraw()
+activate TM
+TM -> TM: (bool success, ) = owner.call{value: address(this).balance}("")
+TM -> TM: require(success)
+deactivate TM
+
+@enduml
